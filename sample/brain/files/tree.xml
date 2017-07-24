@@ -1,0 +1,42 @@
+
+
+<!-- Load standard AIML set -->
+<file><set topic="atomic">brain/files/std-atomic.aiml</file>
+<file><set topic="profile">brain/files/std-profile.aiml</file>
+<file><set topic="botmaster">brain/files/std-botmaster.aiml</file>
+<file><set topic="brain">brain/files/std-brain.aiml</file>
+<file><set topic="connect">brain/files/std-connect.aiml</file>
+<file><set topic="dictionary">brain/files/std-dictionary.aiml</file>
+<file><set topic="disconnect">brain/files/std-disconnect.aiml</file>
+<file><set topic="dont">brain/files/std-dont.aiml</file>
+<file><set topic="errors">brain/files/std-errors.aiml</file>
+<file><set topic="gender">brain/files/std-gender.aiml</file>
+<file><set topic="gerography">brain/files/std-geography.aiml</file>
+<file><set topic="german">brain/files/std-german.aiml</file>
+<file><set topic="gossip">brain/files/std-gossip.aiml</file>
+<file><set topic="hello">brain/files/std-hello.aiml</file>
+<file><set topic="inactivity">brain/files/std-inactivity.aiml</file>
+<file><set topic="inventions">brain/files/std-inventions.aiml</file>
+<file><set topic="knowledge">brain/files/std-knowledge.aiml</file>
+<file><set topic="login">brain/files/std-login.aiml</file>
+<file><set topic="numbers">brain/files/std-numbers.aiml</file>
+<file><set topic="politics">brain/files/std-politics.aiml</file>
+<file><set topic="religion">brain/files/std-religion.aiml</file>
+<file><set topic="robot">brain/files/std-robot.aiml</file>
+<file><set topic="sales">brain/files/std-sales.aiml</file>
+<file><set topic="sextalk">brain/files/std-sextalk.aiml</file>
+<file><set topic="sports">brain/files/std-sports.aiml</file>
+<file><set topic="srai">brain/files/std-srai.aiml</file>
+<file><set topic="suffixes">brain/files/std-suffixes.aiml</file>
+<file><set topic="that">brain/files/std-that.aiml</file>
+<file><set topic="turning">brain/files/std-turing.aiml</file>
+<file><set topic="yesno">brain/files/std-yesno.aiml</file>
+<file><set topic="65percent">brain/files/std-65percent.aiml</file>
+<file><set topic="personality">brain/files/std-personality.aiml</file>
+<file><set topic="pickup">brain/files/std-pickup.aiml</file>
+
+
+<file><set topic="currency">brain/files/std-currency.aiml</file>
+<file><set topic="jokes">brain/files/std-jokes.aiml</file>
+<file><set topic="yomama">brain/files/std-yomama.aiml</file>
+<file><set topic="seasons">brain/files/std-seasons.aiml</file>
