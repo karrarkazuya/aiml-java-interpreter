@@ -16,6 +16,7 @@ This is a one class simple AIML(Artificial Intelligence Markup Language) library
 * Supports bot
 * Supports that
 * Supports think
+* Supports topic
 * Supports condition
 * Supports else. find it in the std-login.aiml. it is a new thing
 
@@ -25,7 +26,7 @@ This is a one class simple AIML(Artificial Intelligence Markup Language) library
 
 ## Still misses
 
-* Can set topic but it will not search for only that topic, did not implement it yet
+* More speed
 
 #### by
 
