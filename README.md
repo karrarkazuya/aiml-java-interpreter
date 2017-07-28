@@ -20,7 +20,7 @@ This is a one class simple AIML(Artificial Intelligence Markup Language) library
 * Supports condition
 * Supports else. find it in the std-login.aiml. it is a new thing
 
-* Supports data stroing for both user and bot
+* Supports data storing for both user and bot
 * Reflixable enough to avoid most of the problems
 
 
