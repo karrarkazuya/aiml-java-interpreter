@@ -12,7 +12,7 @@ import java.util.Random;
 /*
  * By Karrar Sattar Honi
  * Simple AIML parser in Java
- * At the date of 2017/7/24 three days before my birthday lol
+ * At the date of 2017/7/24 three days before my birthday kek
  */
 
 
@@ -36,8 +36,13 @@ public class AIMLParser {
  private ArrayList < String > userinfotags;
  // holds the bot's random info
  private ArrayList < String > randoms;
- // holds the bot's topics list
+ // holds the bot's topics list from files
  private ArrayList < String > topics;
+//holds the bot's topic tags from aimls
+private ArrayList < String > topicscatags;
+//holds the bot's topic tags names from aimls
+private ArrayList < String > topicscatagsnames;
+ 
  // Now topic
  private String topic;
  // List of the stars
@@ -84,6 +89,8 @@ public class AIMLParser {
   randoms = new ArrayList < String > ();
   files = new ArrayList < String > ();
   topics = new ArrayList < String > ();
+  topicscatags = new ArrayList < String > ();
+  topicscatagsnames = new ArrayList < String > ();
   stars = new ArrayList < String > ();
 
 
@@ -140,11 +147,15 @@ public class AIMLParser {
 
   int searchtimes = 0;
   text = FilterInput(text, 1);
-  text = buildReply(text);
+  text = GetReply(text);
 
+  if(text == null){
+	  return "no reply";
+  }
+  
   while (text.contains("[srai]")) {
 
-   text = buildReply(text.replace("[srai]", ""));
+   text = GetReply(text.replace("[srai]", ""));
    searchtimes++;
 
 
@@ -160,145 +171,305 @@ public class AIMLParser {
  }
 
 
+ 
+ // check if in topic or not and make a reply
+ private String GetReply(String text){
+	 int topicnum = checkTopic();
+	 String reply;
+	 if(topicnum != 1234123414){
+		 reply = buildReplyTopicBased(text,topicnum);
+		 if(reply!=null){
+			 return reply;
+		 }
+	 }else{
+		 text = buildReply(text);
+		 return text;
+	 }
+	 
+	 return null;
+	 
+	 
+ }
+ 
+ 
  private String buildReply(String text) {
 
-  text = text.toLowerCase();
-  randoms.clear();
+	  text = text.toLowerCase();
+	  randoms.clear();
 
 
 
-  for (int i = 0; i < files.size(); i++) {
+	  for (int i = 0; i < files.size(); i++) {
 
-   file = files.get(i).toString();
+	   file = files.get(i).toString();
 
-   topic = topics.get(i).toString();
+	   topic = topics.get(i).toString();
+	   
+	   
 
-   // Reading the aiml file first!
-   try {
-    br = new BufferedReader(new FileReader(file));
+	   // Reading the aiml file first!
+	   try {
+	    br = new BufferedReader(new FileReader(file));
 
-    while ((ailine = br.readLine()) != null) {
+	    while ((ailine = br.readLine()) != null) {
 
+	    	ailine = ailine.replace(" =", "=");
+	    	ailine = ailine.replace("= ", "=");
 
-     if (ailine.contains("<category>")) {
-      int looper = 0;
-      while (!ailine.contains("</category>")) {
-       ailine = ailine + br.readLine();
+	    	
+	    	
+	    	//remove topics
+	    	if (ailine.contains("<topic name")) {
+	    		int looper = 0;
+	    		
+	    		while (!ailine.contains("</topic>")) {
+	    		       ailine = ailine + br.readLine();
 
-       looper++;
+	    		}
+	    		ailine = br.readLine();
+	    	}
+	    	
+	    	
+	    	
+	    	
+	    	
+	     if (ailine.contains("<category>")) {
+	      int looper = 0;
+	      while (!ailine.contains("</category>")) {
+	       ailine = ailine + br.readLine();
 
-       if (looper > 999) {
-        return "Error: Infinity loop because of a missing </category> at topic: " + topic + "\ncatagory:" + ailine;
-       }
-      }
-      ailine = ailine.toLowerCase();
+	       looper++;
 
-
-      if (!ailine.equals(lastcatag)) {
-
-
-       aipattern = getAIMLtag(ailine, "pattern");
-       if (aipattern.contains(errortag)) {
-        return aipattern;
-       }
-       aitemplate = getAIMLtag(ailine, "template");
-       if (aitemplate.contains(errortag)) {
-        return aitemplate;
-       }
-
-
-
-       // If exact match
-       if (aipattern.equals(text)) {
-
-        // check for that
-        aithat = getAIMLtag(ailine, "that");
-        if (!aithat.contains(errortag)) {
-         if (aithat.equals(lastreply)) {
-          lastcatag = ailine;
-          lastreply = extractTags(text, aitemplate, ailine);
-          if (!lastreply.equals("") && !lastreply.equals(unknown))
-           return lastreply;
-         }
-        } else {
-         lastcatag = ailine;
-         lastreply = extractTags(text, aitemplate, ailine);
-         if (!lastreply.equals("") && !lastreply.equals(unknown))
-          return lastreply;
-        }
+	       if (looper > 999) {
+	        return "Error: Infinity loop because of a missing </category> at topic: " + topic + "\ncatagory:" + ailine;
+	       }
+	      }
+	      ailine = ailine.toLowerCase();
 
 
+	      
+	      if (!ailine.equals(lastcatag)) {
 
 
-
-        //Else if it got star
-       } else if (aipattern.contains("*")) {
-        stars = null;
-        stars = getStars(text, addTags(aipattern));
-        if (stars != null) {
-
-         // check for that
-         aithat = getAIMLtag(ailine, "that");
-         if (!aithat.contains(errortag)) {
-          if (aithat.equals(lastreply)) {
-           lastcatag = ailine;
-           lastreply = extractTags(text, aitemplate, ailine);
-           if (!lastreply.equals("") && !lastreply.equals(unknown))
-            return lastreply;
-          }
-         } else {
-          lastcatag = ailine;
-          lastreply = extractTags(text, aitemplate, ailine);
-          if (!lastreply.equals("") && !lastreply.equals(unknown))
-           return lastreply;
-         }
+	       aipattern = getAIMLtag(ailine, "pattern");
+	       if (aipattern.contains(errortag)) {
+	        return aipattern;
+	       }
+	       aitemplate = getAIMLtag(ailine, "template");
+	       if (aitemplate.contains(errortag)) {
+	        return aitemplate;
+	       }
 
 
+	       
 
-        }
+	       // If exact match
+	       if (aipattern.equals(text)) {
+	    	   
+	    	   
 
-
-       }
-
-      }
-
-
-     }
+	        // check for that
+	        aithat = getAIMLtag(ailine, "that");
+	        if (!aithat.contains(errortag)) {
+	         if (aithat.equals(lastreply)) {
+	          lastcatag = ailine;
+	          lastreply = extractTags(text, aitemplate, ailine);
+	          if (!lastreply.equals("") && !lastreply.equals(unknown))
+	           return lastreply;
+	         }
+	        } else {
+	         lastcatag = ailine;
+	         lastreply = extractTags(text, aitemplate, ailine);
+	         if (!lastreply.equals("") && !lastreply.equals(unknown))
+	          return lastreply;
+	        }
 
 
 
 
-    }
-   } catch (FileNotFoundException e) {
-    // file not found
-    System.out.println(e.getMessage());
-   } catch (IOException e) {
-    // I/O Error
-    System.out.println(e.getMessage());
-   }
 
-  }
+	        //Else if it got star
+	       } else if (aipattern.contains("*")) {
+	        stars = null;
+	        stars = getStars(text, addTags(aipattern));
+	        if (stars != null) {
+	        	
+	        	
 
-  if (!lastcatag.equals("")) {
-   String aipattern = getAIMLtag(lastcatag, "pattern");
-   if (aipattern.contains(errortag)) {
-    return aipattern;
-   }
-   String aitemplate = getAIMLtag(lastcatag, "template");
-   if (aitemplate.contains(errortag)) {
-    return aitemplate;
-   }
+	         // check for that
+	         aithat = getAIMLtag(ailine, "that");
+	         if (!aithat.contains(errortag)) {
+	          if (aithat.equals(lastreply)) {
+	           lastcatag = ailine;
+	           lastreply = extractTags(text, aitemplate, ailine);
+	           if (!lastreply.equals("") && !lastreply.equals(unknown)){
+	            return lastreply;
+	          }
+	          }
+	         } else {
+	          lastcatag = ailine;
+	          lastreply = extractTags(text, aitemplate, ailine);
+	          if (!lastreply.equals("") && !lastreply.equals(unknown)){
+	        	  return lastreply;
+	          }
+	         }
 
-   return extractTags(text, aitemplate, lastcatag);
-  }
 
-  reply = addTags(reply);
-  lastreply = reply;
-  return reply + "";
 
+	        }
+
+
+	       }
+
+	      }
+
+
+	     }
+
+
+
+
+	    }
+	   } catch (FileNotFoundException e) {
+	    // file not found
+	    System.out.println(e.getMessage());
+	   } catch (IOException e) {
+	    // I/O Error
+	    System.out.println(e.getMessage());
+	   }
+
+	  }
+
+	  if (!lastcatag.equals("")) {
+	   String aipattern = getAIMLtag(lastcatag, "pattern");
+	   if (aipattern.contains(errortag)) {
+	    return aipattern;
+	   }
+	   String aitemplate = getAIMLtag(lastcatag, "template");
+	   if (aitemplate.contains(errortag)) {
+	    return aitemplate;
+	   }
+
+	   return extractTags(text, aitemplate, lastcatag);
+	  }
+
+	  reply = addTags(reply);
+	  lastreply = reply;
+	  return reply + "";
+
+
+	 }
+ 
+ 
+ 
+ 
+ private String buildReplyTopicBased(String text,int position) {
+
+	  text = text.toLowerCase();
+	  randoms.clear();
+	  ailine = null;
+
+	  String catag = topicscatags.get(position);
+	  
+
+	   // Reading the aiml file first!
+	   
+	  ailine = cropFromTo(catag,"<category>","</category>",true);
+
+	    while (ailine != null) {
+
+
+	    catag = catag.replace(ailine, "");
+	    	
+	    	
+	    ailine = ailine.toLowerCase();
+
+	       aipattern = getAIMLtag(ailine, "pattern");
+	       if (aipattern.contains(errortag)) {
+	        return aipattern;
+	       }
+	       aitemplate = getAIMLtag(ailine, "template");
+	       if (aitemplate.contains(errortag)) {
+	        return aitemplate;
+	       }
+
+
+
+	       
+	       
+	       // If exact match
+	       if (aipattern.equals(text)) {
+
+	        // check for that
+	        aithat = getAIMLtag(ailine, "that");
+	        if (!aithat.contains(errortag)) {
+	         if (aithat.equals(lastreply)) {
+	          lastcatag = ailine;
+	          lastreply = extractTags(text, aitemplate, ailine);
+	          if (!lastreply.equals("") && !lastreply.equals(unknown))
+	           return lastreply;
+	         }
+	        } else {
+	         lastcatag = ailine;
+	         lastreply = extractTags(text, aitemplate, ailine);
+	         if (!lastreply.equals("") && !lastreply.equals(unknown))
+	          return lastreply;
+	        }
+
+
+
+
+
+	        //Else if it got star
+	       } else if (aipattern.contains("*")) {
+	        stars = null;
+	        stars = getStars(text, addTags(aipattern));
+	        if (stars != null) {
+
+	         // check for that
+	         aithat = getAIMLtag(ailine, "that");
+	         if (!aithat.contains(errortag)) {
+	          if (aithat.equals(lastreply)) {
+	           lastcatag = ailine;
+	           lastreply = extractTags(text, aitemplate, ailine);
+	           if (!lastreply.equals("") && !lastreply.equals(unknown))
+	            return lastreply;
+	          }
+	         } else {
+	          lastcatag = ailine;
+	          lastreply = extractTags(text, aitemplate, ailine);
+	          if (!lastreply.equals("") && !lastreply.equals(unknown))
+	           return lastreply;
+	         }
+
+
+
+	        }
+
+
+	       
+
+	      
+
+	      
+
+	     }
+
+
+
+	    
+	    
+
+
+	      
+	      
+	      ailine = cropFromTo(catag,"<category>","</category>",true);
+	      
+	 }
+	    
+	    return null;
 
  }
-
 
  private String extractTags(String text, String template, String line) {
   reply = template;
@@ -391,6 +562,8 @@ public class AIMLParser {
  public boolean setTree(String tree) {
   TreeLocation = tree;
   GetFiles(tree);
+  
+  getAlltopics();
   return true;
  }
 
@@ -1089,6 +1262,117 @@ public class AIMLParser {
  }
 
 
+// Get all topics
+ private void getAlltopics(){
 
+
+	 String newtopic = "";
+	  for (int i = 0; i < files.size(); i++) {
+
+	   file = files.get(i).toString();
+
+	   // Reading the aiml file first!
+	   try {
+	    br = new BufferedReader(new FileReader(file));
+
+	    while ((newtopic = br.readLine()) != null) {
+	    	
+	    	newtopic = newtopic.replace(" =", "=");
+	    	newtopic = newtopic.replace("= ", "=");
+	    	
+	     if (newtopic.contains("<topic name")) {
+	    	 
+	      int looper = 0;
+	      while (!newtopic.contains("</topic>")) {
+	    	  newtopic = newtopic + br.readLine();
+
+	       looper++;
+
+	       if (looper > 999) {
+	        System.out.println( "Error: Infinity loop because of a missing </category> at topic: " + topic + "\ncatagory:" + ailine);
+	       break;
+	       }
+	      }
+	     
+	      
+	      if(!newtopic.equals("")){
+	    	  addTopics(newtopic);
+	    	  
+	    	  newtopic = "";
+	      }
+	      
+	      
+
+	    	  
+	       }
+
+	      }
+
+
+	     
+
+
+
+
+	    
+	   } catch (FileNotFoundException e) {
+	    // file not found
+	    System.out.println(e.getMessage());
+	   } catch (IOException e) {
+	    // I/O Error
+	    System.out.println(e.getMessage());
+	   }
+
+	  }
+
+ }
+
+
+// adds a topic
+private void addTopics(String newtopic) {
+	
+	
+	 while (newtopic.startsWith(" ")) {
+		 newtopic = newtopic.replaceFirst(" ", "");
+		   }
+
+		   while (newtopic.contains("  ")) {
+			   newtopic = newtopic.replace("  ", " ");
+		   }
+
+		   while (newtopic.endsWith(" ")) {
+			   newtopic = newtopic.substring(0, newtopic.length() - 1);
+		   }
+
+		   while (newtopic.contains("	")) {
+			   newtopic = newtopic.replace("	", "");
+		   }
+		   
+
+	String topicname = cropFromTo(newtopic,"<topic name=\"","\">",false);
+	
+	String topiccatag= cropFromTo(newtopic,"<topic name=\""+topicname+"\">","</topic>",false);
+	
+	topicscatagsnames.add(topicname);
+	
+	topicscatags.add(topiccatag);
+	
+	
+}
+
+
+//check if the topic is same as the wanted topic
+private int checkTopic(){
+	
+	String tag = getTag("user","topic");
+	
+	for(int i = 0;i<topicscatags.size();i++){
+		if(topicscatagsnames.get(i).equals(tag)){
+			return i;
+		}
+	}
+	
+	return 1234123414;
+}
 
 }
