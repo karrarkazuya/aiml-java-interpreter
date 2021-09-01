@@ -1,4 +1,4 @@
-# AIMLParser
+# aiml-java-interpreter
 
 This is a one class simple AIML(Artificial Intelligence Markup Language) library parser with a simple example yet so powerful and worth giving it a try
 
@@ -24,7 +24,7 @@ This is a one class simple AIML(Artificial Intelligence Markup Language) library
 * Reflixable enough to avoid most of the problems
 
 
-## Still misses
+## Still needs
 
 * More speed
 
